@@ -13,8 +13,14 @@ Welcome to **Let's Do It**, a simple yet powerful To-Do List program that helps 
 
 ## Screenshots
 
-![Light Mode Screenshot](https://example.com/light-mode-screenshot.png)
-![Dark Mode Screenshot](https://example.com/dark-mode-screenshot.png)
+<a href="https://taskhandlerr.vercel.app/">
+    <img src="Light_UI.png" alt="Light Mode" height="350">
+</a>
+
+<a href="https://taskhandlerr.vercel.app/">
+    <img src="Dark_UI.png" alt="Light Mode" height="350">
+</a>
+
 
 *Click the images to view the project in action!*
 
