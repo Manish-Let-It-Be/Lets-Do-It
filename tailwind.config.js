@@ -81,5 +81,5 @@ export default {
       },
     },
   },
-  plugins: [tailwindcss-animate],
+  plugins: ['tailwindcss-animate'],
 };
