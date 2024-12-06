@@ -39,7 +39,7 @@ function App() {
                     className="flex items-center gap-2 text-sm sm:text-base"
                   >
                     <Github className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:rotate-12" />
-                    <span>Created by Manish</span>
+                    <span>by Manish</span>
                   </a>
                 </Button>
               </Tooltip>
