@@ -15,7 +15,7 @@ function App() {
               <div className="flex items-center gap-2">
                 <CheckSquare className="w-8 h-8 sm:w-10 sm:h-10 text-primary animate-bounce" />
                 <h1 className="text-3xl sm:text-4xl font-bold font-['Satisfy'] tracking-wide animate-pulse bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
-                  *Let's Do It
+                  Let's Do It
                 </h1>
               </div>
               <ThemeToggle />
@@ -39,7 +39,7 @@ function App() {
                     className="flex items-center gap-2 text-sm sm:text-base"
                   >
                     <Github className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:rotate-12" />
-                    <span>by Manish</span>
+                    <span>Created by Manish</span>
                   </a>
                 </Button>
               </Tooltip>

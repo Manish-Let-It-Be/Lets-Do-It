@@ -1,25 +1,37 @@
 import { useState } from "react";
-import { Check, Loader2, Trash2, Plus } from "lucide-react";
+import { Plus, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
-
-type Todo = {
-  id: number;
-  text: string;
-  status: "pending" | "working" | "completed";
-};
+import { format } from "date-fns";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { toPng } from 'html-to-image';
+import { TodoItem } from "./TodoItem";
+import { Todo } from "@/types/todo";
 
 export function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState("");
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const addTodo = () => {
     if (input.trim()) {
       setTodos([
         ...todos,
-        { id: Date.now(), text: input.trim(), status: "pending" },
+        { 
+          id: Date.now(), 
+          text: input.trim(), 
+          status: "pending",
+          createdAt: new Date(),
+          totalTimeMs: 0
+        },
       ]);
       setInput("");
     }
@@ -32,24 +44,94 @@ export function TodoList() {
   };
 
   const updateTodoStatus = (id: number, status: Todo["status"]) => {
-    setTodos(todos.map((todo) => 
-      todo.id === id ? { ...todo, status } : todo
-    ));
+    setTodos(todos.map((todo) => {
+      if (todo.id === id) {
+        if (status === "working") {
+          const now = new Date();
+          if (todo.status === "working") {
+            return todo; // No change if already working
+          }
+          return { 
+            ...todo, 
+            status, 
+            startedAt: now,
+          };
+        }
+        if (status === "completed" && todo.status === "working" && todo.startedAt) {
+          const now = new Date();
+          const currentSession = now.getTime() - todo.startedAt.getTime();
+          return { 
+            ...todo, 
+            status, 
+            completedAt: now,
+            totalTimeMs: todo.totalTimeMs + currentSession
+          };
+        }
+        return { ...todo, status };
+      }
+      return todo;
+    }));
   };
 
   const removeTodo = (id: number) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setTodos((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
+  const exportTodoList = async () => {
+    const root = document.getElementById('root');
+    if (root) {
+      try {
+        const dataUrl = await toPng(root, {
+          quality: 0.95,
+          style: {
+            transform: 'scale(1)',
+          },
+        });
+        const link = document.createElement('a');
+        link.download = `todo-list-${format(new Date(), 'yyyy-MM-dd')}.png`;
+        link.href = dataUrl;
+        link.click();
+      } catch (err) {
+        console.error('Failed to export todo list:', err);
+      }
+    }
+  };
+
+  const completedTasks = todos.filter(todo => todo.status === "completed").length;
+  const totalTasks = todos.length;
+
   return (
     <div className="w-full max-w-md mx-auto space-y-4">
+      <div className="text-center mb-6">
+        <h2 className="text-3xl font-['Dancing_Script'] font-bold mb-2 animate-pulse bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
+          {format(new Date(), 'EEEE')}
+        </h2>
+        <h3 className="text-xl font-['Dancing_Script'] animate-pulse bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
+          {format(new Date(), 'MMMM d, yyyy')}
+        </h3>
+        <p className="text-sm text-muted-foreground mt-2">
+          {completedTasks} of {totalTasks} tasks completed
+        </p>
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-2">
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Add a new task..."
-          className="transition-all duration-200 focus:ring-2 focus:ring-primary flex-1"
+          className="transition-all duration-200 focus:ring-2 focus:ring-primary flex-1 bg-background/50 backdrop-blur-sm border-2"
         />
         <Tooltip content="Add new task">
           <Button
@@ -62,67 +144,39 @@ export function TodoList() {
         </Tooltip>
       </div>
 
-      <div className="space-y-2">
-        {todos.map((todo) => (
-          <div
-            key={todo.id}
-            className={cn(
-              "flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-lg transition-all duration-200 gap-2 sm:gap-4",
-              "bg-background/90 border hover:shadow-md",
-              todo.status === "working" && "border-blue-500 bg-blue-50/90 dark:bg-blue-950/90",
-              todo.status === "completed" && "border-green-500 bg-green-50/90 dark:bg-green-950/90"
-            )}
-          >
-            <span className={cn(
-              "transition-all duration-200 break-words w-full sm:w-auto",
-              todo.status === "completed" && "line-through text-muted-foreground"
-            )}>
-              {todo.text}
-            </span>
-            <div className="flex gap-2 w-full sm:w-auto justify-end">
-              <Tooltip content="Mark as working">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => updateTodoStatus(todo.id, "working")}
-                  className={cn(
-                    "transition-all duration-200 hover:scale-105",
-                    todo.status === "working" && "bg-blue-500 text-white hover:bg-blue-600"
-                  )}
-                >
-                  <Loader2 className={cn(
-                    "w-4 h-4",
-                    todo.status === "working" && "animate-spin"
-                  )} />
-                </Button>
-              </Tooltip>
-              <Tooltip content="Mark as completed">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => updateTodoStatus(todo.id, "completed")}
-                  className={cn(
-                    "transition-all duration-200 hover:scale-105",
-                    todo.status === "completed" && "bg-green-500 text-white hover:bg-green-600"
-                  )}
-                >
-                  <Check className="w-4 h-4" />
-                </Button>
-              </Tooltip>
-              <Tooltip content="Remove task">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => removeTodo(todo.id)}
-                  className="transition-all duration-200 hover:scale-105 hover:bg-red-500 hover:text-white"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </Tooltip>
-            </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={todos} strategy={verticalListSortingStrategy}>
+          <div className="space-y-2">
+            {todos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                updateTodoStatus={updateTodoStatus}
+                removeTodo={removeTodo}
+              />
+            ))}
           </div>
-        ))}
-      </div>
+        </SortableContext>
+      </DndContext>
+
+      {todos.length > 0 && (
+        <div className="flex justify-center mt-6">
+          <Tooltip content="Export as image">
+            <Button
+              variant="outline"
+              onClick={exportTodoList}
+              className="transition-all duration-200 hover:scale-105"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export My Day
+            </Button>
+          </Tooltip>
+        </div>
+      )}
     </div>
   );
 }
