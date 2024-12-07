@@ -22,7 +22,7 @@ Welcome to **Let's Do It**, a simple yet powerful To-Do List program that helps 
 </a>
 
 
-*Click the images to view the project in action!*
+**Click the images to view the project in action!*
 
 ## Live Demo
 
