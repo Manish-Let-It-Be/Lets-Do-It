@@ -49,7 +49,7 @@ To get a local copy up and running, follow these steps:
    ```
 4. Start the application:
    ```bash
-   npm start
+   npm run dev
    ```
 
 ## Contributing
@@ -59,5 +59,5 @@ Contributions are welcome! Please feel free to submit a pull request or open an 
 ## Acknowledgments
 
 - Thanks to all the contributors and the open-source community for their support.
-```
+
 
