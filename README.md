@@ -11,7 +11,6 @@ Welcome to **Let's Do It**, a simple yet powerful To-Do List program that helps 
 - [Live Demo](#live-demo)
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
-- [Acknowledgments](#acknowledgments)
 
 ---
 
