@@ -1,5 +1,9 @@
 # [Lets-Do-It](https://taskhandle.netlify.app/)
 
+<a href="https://taskhandlerr.vercel.app/">
+    <img src="LetsDoItTitle.gif" alt="Lets Do It User Interface" height="120">
+</a>
+
 Welcome to **Let's Do It**, a simple yet powerful To-Do List program that helps you manage your tasks efficiently. With this application, you can create, manage, and export your daily tasks seamlessly.
 
 ---
