@@ -1,7 +1,10 @@
 # [Lets-Do-It](https://taskhandle.netlify.app/)
-
+<!--
+![Vercel Deploy](https://deploy-badge.vercel.app/vercel/reactions-demo?style=for-the-badge)
+![Netlify Deploy](http://img.shields.io/netlify/e6d5a4e0-dee1-4261-833e-2f47f509c68f?style=for-the-badge&logo=netlify)
+-->
 <a href="https://taskhandlerr.vercel.app/">
-    <img src="LetsDoItTitle.gif" alt="Lets Do It User Interface" height="120">
+    <img src="LetsDoItTitle.gif" alt="Lets Do It User Interface" height="100">
 </a>
 
 Welcome to **Let's Do It**, a simple yet powerful To-Do List program that helps you manage your tasks efficiently. With this application, you can create, manage, and export your daily tasks seamlessly.
